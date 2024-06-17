@@ -57,7 +57,7 @@ int main( int argc, char** argv ) {
     //maslab-pc07.uwaterloo.ca
     // getaddrinfo("maslab-pc07.uwaterloo.ca", "80", &hints, &res); //TODO: check the port
     // getaddrinfo("www.uwaterloo.ca", "80", &hints, &res);
-    getaddrinfo(argv[1], "80", &hints, &res);
+    getaddrinfo(argv[1], "2520", &hints, &res);
 
 
     // create a socket ( socket()), and    
@@ -76,17 +76,24 @@ int main( int argc, char** argv ) {
 // load_plans function (which loads the file into memory for you -- remember to deallocate
 // the data when done). The plans are large, so you perhaps cannot send it all in one call to
 // send(); so check the results and send repeatedly as needed.
+    int  sentall = sendall ( sockfd, buf.data, &buf.length);
 
 // • After you make your transmission, try to receive (using recv()) a response that could be
-
+    char *response_buf = malloc (64);
+    int received = recv(sockfd, response_buf, 64, 0); //TODO: check flags
     // int recv( int sockfd, void * buffer, int length, int flags );
 // up to 64 characters long. If your upload was unsuccessful, you will get an error of some
+
 // sort, otherwise you will get back a message that indicates success. You should print this
+    printf("Response: %s", response_buf);
 // message so you can see what it says. If it says “Success”, it worked!
 // • Close the connection.
+
 // • Your program should not leak memory; be sure to destroy/deallocate anything
 // initialized/allocated.
 
+    freeaddrinfo( res );
+    // freeaddrinfo( &hints );
 
     return 0;
 }
