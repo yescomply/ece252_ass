@@ -65,8 +65,11 @@ int main( int argc, char** argv ) {
 
     // then connect() to the remote server.
     int status = connect(sockfd, res->ai_addr, res->ai_addrlen);
-    printf("Tried connecting via socket: %d \n", status);
-
+    // printf("Tried connecting via socket: %d \n", status);
+    if (status != 0) {
+        printf( "Couldn't establish the socket connection. Status: %d. Terminating. \n", status);
+        return -1;
+    }
     // #Lecture 7 example END
 
 
@@ -78,6 +81,10 @@ int main( int argc, char** argv ) {
 // send(); so check the results and send repeatedly as needed.
     int  sentall = sendall ( sockfd, buf.data, &buf.length);
 
+    if (status != 0) {
+        printf( "Couldn't send all data. Terminating. \n");
+        return -1;
+    }
 // • After you make your transmission, try to receive (using recv()) a response that could be
     char *response_buf = malloc (64);
     int received = recv(sockfd, response_buf, 64, 0); //TODO: check flags
@@ -87,13 +94,15 @@ int main( int argc, char** argv ) {
 // sort, otherwise you will get back a message that indicates success. You should print this
     printf("Response: %s", response_buf);
 // message so you can see what it says. If it says “Success”, it worked!
-// • Close the connection.
-
+    // • Close the connection.
+    close(sockfd);
 // • Your program should not leak memory; be sure to destroy/deallocate anything
 // initialized/allocated.
-
-    freeaddrinfo( res );
+    
+    freeaddrinfo ( res );
+    free ( response_buf );
     // freeaddrinfo( &hints );
+    free (buf.data);
 
     return 0;
 }
