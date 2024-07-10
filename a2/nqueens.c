@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 int safe(char * config, int i, int j)
 {
@@ -17,6 +18,13 @@ int safe(char * config, int i, int j)
 }
 
 int count = 0;
+/*Multithreading START*/
+
+pthread_mutex_t mutex;
+//TODO: create datastructure to contain the function args for the threads
+
+
+/*Multithreading END*/
 
 void nqueens(char *config, int n, int i)
 {
@@ -25,15 +33,17 @@ void nqueens(char *config, int n, int i)
 
     if (i==n)
     {
-        count++;
+        /*Multithreading START*/
+        count++; //TODO: lock with mutex
+        /*Multithreading END*/
     }
     
     /* try each possible position for queen <i> */
-    for (j=0; j<n; j++)
+    for (j=0; j<n; j++) //columns
     {
         /* allocate a temporary array and copy the config into it */
         new_config = malloc((i+1)*sizeof(char));
-        memcpy(new_config, config, i*sizeof(char));
+        memcpy(new_config, config, i*sizeof(char)); //TODO: check if need to lock this memory - if configs must be shared across threads at all
         if (safe(new_config, i, j))
         {
             new_config[i] = j;
@@ -59,7 +69,14 @@ int main(int argc, char *argv[])
     config = malloc(n * sizeof(char));
 
     printf("running queens %d\n", n);
+    /*Multithreading (mine) START*/
+
+    //TODO: create the N threads with N different configs (for the first row, i.e. i=0)
+    //TODO: call the nqueens on each thread starting at i=1
+    //pthread_create( pthread_t *thread, const pthread_attr_t * attr, void *(*start_routine)( void * ), void *arg );
+
     nqueens(config, n, 0);
+    /*Multithrading END*/
     printf("# solutions: %d\n", count);
 
     return 0;
