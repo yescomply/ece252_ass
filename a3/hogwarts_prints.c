@@ -68,18 +68,18 @@ void house_elf_cleanup( void * );
 /* Complete the implementation of main() */
 
 
-int main( int argc, char** argv ) {
+// int main( int argc, char** argv ) {
 
-  if ( argc != 2 ) {
-      printf( "Usage: %s total_tasks\n", argv[0] );
-      return -1;
-  }
-  /* Init global variables here */
-   total_tasks = atoi( argv[1] );
-////////////////////TODO: remove on submission /////////////
-// int main() {
+//   if ( argc != 2 ) {
+//       printf( "Usage: %s total_tasks\n", argv[0] );
+//       return -1;
+//   }
 //   /* Init global variables here */
-//    total_tasks = 20;
+//    total_tasks = atoi( argv[1] );
+////////////////////TODO: remove on submission /////////////
+int main() {
+  /* Init global variables here */
+   total_tasks = 20;
 ///////////////////////////////////////////////////////////
 
    active_tasks = total_tasks; // start with all tasks given
@@ -148,7 +148,7 @@ void* dobby( void * arg ) {
          
          int tasks_topost = active_tasks - 10 > 0  ? 10 : active_tasks;
 
-         //printf("AS: Dobby woken up. Active tasks: %d \n", active_tasks);
+         printf("AS: Dobby woken up. Active tasks: %d \n", active_tasks);
          //When woken up, Dobby posts (up to) 10 tasks to do by calling post_tasks() 
 
          post_tasks(tasks_topost);
@@ -159,7 +159,7 @@ void* dobby( void * arg ) {
          pthread_mutex_unlock(&mutex);
 
          
-         //printf("AS: Dobby thread just posted. Active tasks: %d \n", active_tasks);
+         printf("Dobby thread just posted. Active tasks: %d \n", active_tasks);
 
          // After that, Dobby sleeps (is blocked).
          sem_post(&full_list); 
@@ -207,25 +207,25 @@ void* house_elf( void * ignore ) {
          
          
          
-         //printf("AS: House elf %d waiting to take task. Active tasks: %d List tasks: %d \n", elf_num, active_tasks, list_tasks);
+         printf("AS: House elf %d waiting to take task. Active tasks: %d List tasks: %d \n", elf_num, active_tasks, list_tasks);
 
          sem_wait(&not_taking); //wait until no one is taking a task
          if (list_tasks > 0)
          {
-            //printf("AS: House elf %d takes task \n", elf_num);
+            printf("AS: House elf %d takes task \n", elf_num);
             current_tasks[elf_num] = take_task();
             pthread_mutex_lock(&mutex);
             // active_tasks -= 1;
             list_tasks -= 1;
             pthread_mutex_unlock(&mutex);
-            //printf("AS: House elf %d took task. Starting work \n", elf_num);
+            printf("AS: House elf %d took task. Starting work \n", elf_num);
             do_work(current_tasks[elf_num]); //can do in parallel
-            //printf("AS: House elf %d just did a task. Active tasks: %d \n", elf_num, active_tasks);
+            printf("AS: House elf %d just did a task. Active tasks: %d \n", elf_num, active_tasks);
 
          }
          else
          {
-            //printf("AS: House elf %d tried taking task but all were done while waiting \n", elf_num);
+            printf("AS: House elf %d tried taking task but all were done while waiting \n", elf_num);
          }
         
          sem_post(&not_taking); //took the task - others turns
@@ -234,12 +234,12 @@ void* house_elf( void * ignore ) {
       }
       else //list is empty
       {
-         //printf("AS: House elf %d waiting for Dobby to free. No list tasks: %d \n", elf_num, list_tasks);
+         printf("AS: House elf %d waiting for Dobby to free. No list tasks: %d \n", elf_num, list_tasks);
          sem_wait(&dobby_free);
-         //printf("AS: House elf %d waited till Dobby is free. No list tasks: %d \n", elf_num, list_tasks);
+         printf("AS: House elf %d waited till Dobby is free. No list tasks: %d \n", elf_num, list_tasks);
          if (list_tasks <= 0)
          {
-            //printf("AS: House elf %d Waking Dobby up now. No list tasks: %d \n", elf_num, list_tasks);
+            printf("AS: House elf %d Waking Dobby up now. No list tasks: %d \n", elf_num, list_tasks);
 
             //wake up dobby
             sem_post(&empty_list);
